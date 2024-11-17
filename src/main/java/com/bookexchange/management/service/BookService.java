@@ -1,5 +1,7 @@
 package com.bookexchange.management.service;
 
+import com.bookexchange.management.dto.BookDO;
+import com.bookexchange.management.dto.BookMapper;
 import com.bookexchange.management.entity.Book;
 import com.bookexchange.management.repository.BookRepository;
 import org.springframework.data.domain.Page;
@@ -39,7 +41,7 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public Page<Book> searchBooks(String title, String author, String genre, Boolean availabilityStatus, String location, int page, int size) {
+    public Page<BookDO> searchBooks(String title, String author, String genre, Boolean availabilityStatus, String location, int page, int size) {
         Specification<Book> spec = Specification.where(null);
 
         if (title != null && !title.isEmpty()) {
@@ -67,7 +69,11 @@ public class BookService {
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("location")), "%" + location.toLowerCase() + "%"));
         }
 
-        return bookRepository.findAll(spec, PageRequest.of(page, size));
+
+           Page<Book> pageBook=     bookRepository.findAll(spec, PageRequest.of(page, size));
+        Page<BookDO> pageBookDO = pageBook.map(BookMapper::toBookDO);
+
+        return pageBookDO;
     }
 }
 

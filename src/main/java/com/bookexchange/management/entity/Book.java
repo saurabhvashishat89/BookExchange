@@ -28,7 +28,7 @@ public class Book {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
+//    @JsonIgnore
     private User user; // Assuming User entity exists for user profiles
 
     // Getters and setters
@@ -68,7 +68,7 @@ public class Book {
         return bookcondition;
     }
 
-    public void setBookCondition(String bookcondition) {
+    public void setBookcondition(String bookcondition) {
         this.bookcondition = bookcondition;
     }
 

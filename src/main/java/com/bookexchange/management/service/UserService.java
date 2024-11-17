@@ -1,5 +1,6 @@
 package com.bookexchange.management.service;
 
+import com.bookexchange.management.dto.LoginResponseDTO;
 import com.bookexchange.management.entity.User;
 import com.bookexchange.management.repository.UserRepository;
 import com.bookexchange.management.util.JwtUtil;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -35,6 +38,9 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+    public Optional<User> findById(long id) {
+        return userRepository.findById(id);
+    }
 
     public void resetPassword(String email, String newPassword,String oldPassword) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found!"));
@@ -46,11 +52,15 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String authenticateUser(String email, String password) {
+    public LoginResponseDTO authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials!"));
         if (passwordEncoder.matches(password, user.getPassword())) {
-            return jwtUtil.generateToken(email); // Generate JWT
+            String token= jwtUtil.generateToken(email); // Generate JWT
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+            loginResponseDTO.setToken(token);
+            loginResponseDTO.setId(user.getId());
+            return loginResponseDTO;
         } else {
             throw new RuntimeException("Invalid credentials!");
         }

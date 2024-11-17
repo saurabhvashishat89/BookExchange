@@ -1,5 +1,6 @@
 package com.bookexchange.management.controller;
 
+import com.bookexchange.management.dto.LoginResponseDTO;
 import com.bookexchange.management.service.UserService;
 import com.bookexchange.management.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,15 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestHeader String email, @RequestHeader String password) {
         try {
-            String token = userService.authenticateUser(email, password);
-            return ResponseEntity.ok(token);
+            LoginResponseDTO loginResponseDTO = userService.authenticateUser(email, password);
+            return ResponseEntity.ok(loginResponseDTO);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            throw new RuntimeException("Please enter valid credentials");
+//            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
